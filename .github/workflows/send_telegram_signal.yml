@@ -1,0 +1,36 @@
+name: Send Telegram Signal Every 5 Minutes
+
+on:
+  schedule:
+    # প্রতি ৫ মিনিটে রান করবে (ক্রন সিনট্যাক্স)
+    - cron: '*/5 * * * *'
+  workflow_dispatch: # GitHub UI থেকে ম্যানুয়ালি রান করার জন্য
+
+jobs:
+  send_signal_job:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10' 
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install python-telegram-bot
+
+      - name: Run Python script to send signal
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          # নিচেরগুলো ঐচ্ছিক, যদি স্ক্রিপ্টে ব্যবহার করেন এবং সিক্রেট হিসেবে রাখতে চান
+          HOW_TO_PLAY_VIDEO_URL: ${{ secrets.HOW_TO_PLAY_VIDEO_URL }}
+          PROMO_CODE: ${{ secrets.PROMO_CODE }}
+          SUPPORT_USERNAME: ${{ secrets.SUPPORT_USERNAME }}
+          GAME_PLAY_URL: ${{ secrets.GAME_PLAY_URL }}
+        run: python send_signal_script.py # নিশ্চিত করুন এই ফাইলের নামটি আপনার পাইথন ফাইলের নামের সাথে মেলে
